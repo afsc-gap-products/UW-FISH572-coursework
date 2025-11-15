@@ -1,0 +1,224 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Using simulated data for FISH 572},
+  pdfauthor={FISH 572, Winter 2026},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Using simulated data for FISH 572}
+\author{FISH 572, Winter 2026}
+\date{2025-11-14}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}\label{introduction}
+
+The mid-course project for Fish 572 is to analyze survey data, which may
+be a data set of their choice or simulated data provided by the
+instructors. This document describes how to use one of the simulated
+datasets. The methods described here may be extended to a real survey
+dataset.
+
+\section{Simulated data}\label{simulated-data}
+
+Data were simulated across a square grid of 100 X 100 cells with depth
+contours. Here is a plot of the locations on the grid with deeper depths
+shown in darker blue.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# make sure in the correct directory}
+\NormalTok{dat }\OtherTok{\textless{}{-}} \FunctionTok{readRDS}\NormalTok{(}\StringTok{"coursework/simulations/sim\_data/sim\_dat\_1.RDS"}\NormalTok{)}
+\NormalTok{predictor\_dat }\OtherTok{\textless{}{-}} \FunctionTok{readRDS}\NormalTok{(}\StringTok{"coursework/simulations/sim\_data/grid.RDS"}\NormalTok{)}
+\NormalTok{predictor\_dat}\SpecialCharTok{$}\NormalTok{negDepth }\OtherTok{\textless{}{-}} \SpecialCharTok{{-}}\DecValTok{1} \SpecialCharTok{*}\NormalTok{ predictor\_dat}\SpecialCharTok{$}\NormalTok{depth}
+
+\FunctionTok{ggplot}\NormalTok{(dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(predictor\_dat, year }\SpecialCharTok{==} \DecValTok{1}\NormalTok{), }\FunctionTok{aes}\NormalTok{(X, Y)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_tile}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{fill =}\NormalTok{ negDepth),}\AttributeTok{colour=}\FunctionTok{rgb}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{,}\FloatTok{0.1}\NormalTok{),}\AttributeTok{linewidth=}\FloatTok{0.2}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_color\_gradient2}\NormalTok{() }\SpecialCharTok{+} 
+  \FunctionTok{scale\_x\_continuous}\NormalTok{(}\AttributeTok{expand =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{)) }\SpecialCharTok{+} \CommentTok{\# Remove expansion on x{-}axis}
+  \FunctionTok{scale\_y\_continuous}\NormalTok{(}\AttributeTok{expand =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{)) }\CommentTok{\# Remove expansion on x{-}axis}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{simulationDescription_files/figure-latex/grid-1.pdf}}
+
+There are eight (8) columns in a simulated dataset: - year: the year,
+being 1:6; - X: the location along the x-axis; - Y: the location along
+the y-axis; - eta: the simulated values; - observed: the observed value
+of the simulated data (i.e.~observation error applied to eta); -
+eta\_scaled: the simulated data scaled by the mean of simulated data in
+a reference simulated dataset; - observed\_scaled: the observed data
+scaled by the mean of observations in a reference simulated dataset; -
+depth\_scaled: the depth scaled by subtracting the mean and dividing by
+the standard deviation.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#plot eta}
+\FunctionTok{ggplot}\NormalTok{(dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(dat, year }\SpecialCharTok{==} \DecValTok{1}\NormalTok{), }\FunctionTok{aes}\NormalTok{(X, Y)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_tile}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{fill =}\NormalTok{ eta),}\AttributeTok{colour=}\FunctionTok{rgb}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{,}\FloatTok{0.05}\NormalTok{),}\AttributeTok{linewidth=}\FloatTok{0.2}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_color\_gradient2}\NormalTok{() }\SpecialCharTok{+} 
+  \FunctionTok{scale\_x\_continuous}\NormalTok{(}\AttributeTok{expand =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{)) }\SpecialCharTok{+} \CommentTok{\# Remove expansion on x{-}axis}
+  \FunctionTok{scale\_y\_continuous}\NormalTok{(}\AttributeTok{expand =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{)) }\CommentTok{\# Remove expansion on x{-}axis}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{simulationDescription_files/figure-latex/simulated-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#plot observed}
+\FunctionTok{ggplot}\NormalTok{(dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(dat, year }\SpecialCharTok{==} \DecValTok{1}\NormalTok{), }\FunctionTok{aes}\NormalTok{(X, Y)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_tile}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{fill =}\NormalTok{ observed),}\AttributeTok{colour=}\FunctionTok{rgb}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{,}\FloatTok{0.05}\NormalTok{),}\AttributeTok{linewidth=}\FloatTok{0.2}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_color\_gradient2}\NormalTok{() }\SpecialCharTok{+} 
+  \FunctionTok{scale\_x\_continuous}\NormalTok{(}\AttributeTok{expand =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{)) }\SpecialCharTok{+} \CommentTok{\# Remove expansion on x{-}axis}
+  \FunctionTok{scale\_y\_continuous}\NormalTok{(}\AttributeTok{expand =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{)) }\CommentTok{\# Remove expansion on x{-}axis}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{simulationDescription_files/figure-latex/observed-1.pdf}}
+
+\section{Sampling from the simulated
+data}\label{sampling-from-the-simulated-data}
+
+One potential use of simulated data is to examine alternative sampling
+designs. In this example, we sample from the 100 X 100 grid in year 1
+using simple random sampling (SRS).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{source}\NormalTok{(}\StringTok{"coursework/simulations/functions\_simulation.R"}\NormalTok{)}
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{245}\NormalTok{)}
+\NormalTok{n }\OtherTok{\textless{}{-}} \DecValTok{1500}
+\NormalTok{year }\OtherTok{\textless{}{-}} \DecValTok{1}
+\NormalTok{dat.yr }\OtherTok{\textless{}{-}}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(dat, year }\SpecialCharTok{==} \DecValTok{1}\NormalTok{)}
+\NormalTok{sampleRowNum }\OtherTok{\textless{}{-}} \FunctionTok{sample}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\FunctionTok{nrow}\NormalTok{(dat.yr),n,}\AttributeTok{replace=}\NormalTok{F)}
+\NormalTok{sampleDat }\OtherTok{\textless{}{-}}\NormalTok{ dat.yr[sampleRowNum,]}
+\CommentTok{\# create sample (as if you were a boat sampling once in each sampled grid cell)}
+\NormalTok{obsCV }\OtherTok{\textless{}{-}} \FloatTok{0.2}  \CommentTok{\# if using "observed" set this to zero (observation error already applied)}
+\NormalTok{catchabilityPars }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{(}\AttributeTok{mean=}\DecValTok{1}\NormalTok{,}\AttributeTok{var=}\FloatTok{0.1}\NormalTok{) }\CommentTok{\#related to gear selectivity (and availability to net)}
+\NormalTok{theSample }\OtherTok{\textless{}{-}} \FunctionTok{sampleGrid.fn}\NormalTok{(sampleDat, obsCV, catchabilityPars,}\AttributeTok{varName=}\StringTok{"eta"}\NormalTok{)}
+
+
+\CommentTok{\#plot sample}
+\FunctionTok{ggplot}\NormalTok{(theSample, }\FunctionTok{aes}\NormalTok{(X, Y)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_tile}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{fill =}\NormalTok{ observation)) }\SpecialCharTok{+}
+  \FunctionTok{scale\_color\_gradient2}\NormalTok{() }\SpecialCharTok{+} 
+  \FunctionTok{scale\_x\_continuous}\NormalTok{(}\AttributeTok{expand =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{)) }\SpecialCharTok{+} \CommentTok{\# Remove expansion on x{-}axis}
+  \FunctionTok{scale\_y\_continuous}\NormalTok{(}\AttributeTok{expand =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{)) }\CommentTok{\# Remove expansion on x{-}axis}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{simulationDescription_files/figure-latex/SRS-1.pdf}}
+
+\section{Analysis}\label{analysis}
+
+Now that you have your samples, the goal is to estimate the population
+in all grid cells across the entire sampling area (100 X 100 grid for
+the simulated data). In other words, you want to create the simulated
+map but you have not sampled all cells, and those that you did sample
+are subject to uncertainty. There are numerous ways to analyze the data,
+which can be lumped into
+\texttt{design-based\textquotesingle{}\textquotesingle{}\ and}modelled'\,'.
+
+\end{document}
