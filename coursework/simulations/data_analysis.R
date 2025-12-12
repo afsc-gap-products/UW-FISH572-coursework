@@ -11,7 +11,7 @@ library(sdmTMB) # install.packages("sdmTMB")
 library(here) # install.packages("here")
 
 # Load simulated data ----------------------------------------------------------
-sim_dat <- readRDS(here::here("coursework/simulations/sim_data/sim_dat_20.RDS"))
+sim_dat <- readRDS(here::here("coursework/simulations/sim_data/sim_dat_1.RDS"))
 
 # sample 100 locations from each year using simple random sampling
 set.seed(99)
@@ -42,7 +42,7 @@ fit <- sdmTMB::sdmTMB(
   data = sim_dat_obs,
   mesh = mesh,
   time = "year",
-  family = sdmTMB::tweedie(), 
+  family = sdmTMB::lognormal(), 
   spatial = "on", # c("on", "off")
   spatiotemporal = "iid", # c("iid", "ar1", "rw", "off")
 )
