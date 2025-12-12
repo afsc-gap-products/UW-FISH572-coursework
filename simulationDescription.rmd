@@ -185,7 +185,7 @@ Assuming again that the area of each grid cell is 1, under simple random samplin
 index_db <- theSample |> 
   dplyr::group_by(year) |> 
   dplyr::summarize(index = mean(observation) * N, 
-                   variance = N^2 * (1-(n/N)) * (variance(observation)/n)) |>
+                   variance = N^2 * (1-(n/N)) * (var(observation)/n)) |>
   dplyr::mutate(se = sqrt(variance/n),
                 lwr = index - qt(0.975, df = n - 1) * se,
                 upr = index + qt(0.975, df = n - 1) * se)
