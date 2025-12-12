@@ -67,28 +67,67 @@ sampleDat <- dat.yr[sampleRowNum,]
 # create sample (as if you were a boat sampling once in each sampled grid cell)
 obsCV <- 0.2  # if using "observed" set this to zero (observation error already applied)
 catchabilityPars <- list(mean=1,var=0.1) #related to gear selectivity (and availability to net)
-theSample <- sampleGrid.fn(sampleDat, obsCV, catchabilityPars,varName="eta_scaled")
+sample <- sampleGrid.fn(sampleDat, obsCV, catchabilityPars,varName="eta_scaled")
 
 #plot sample
-ggplot(theSample, aes(X, Y)) +
+ggplot(sample, aes(X, Y)) +
   geom_tile(aes(fill = observation)) +
   scale_color_gradient2() + 
   scale_x_continuous(expand = c(0, 0)) + # Remove expansion on x-axis
   scale_y_continuous(expand = c(0, 0)) # Remove expansion on x-axis
+```
 
-#TODO: add samples for all years to theSample
+Now let's sample all years, while providing a different example of how to sample the data object and view true values and observations.
+
+```{r SRS all years}
+# sample from each year of survey data
+sample_dat <- dat |>
+  dplyr::group_by(year) |>
+  dplyr::slice_sample(n = 100)
+
+samples <- sampleGrid.fn(as.data.frame(sample_dat), obsCV, catchabilityPars, varName="eta_scaled")
+
+# plot samples over surface of mean without observation error (taken as "true")
+ggplot2::ggplot(dat, aes(X, Y)) +
+  ggplot2::geom_raster(aes(fill = eta_scaled)) +
+  ggplot2::geom_point(aes(size = observation), data = samples, pch = 21) +
+  ggplot2::facet_wrap(~year) +
+  scale_color_gradient2() + 
+  ggplot2::scale_size_area() +
+  ggplot2::coord_cartesian(expand = FALSE)
 ```
 
 # Analysis
 
-Now that you have your samples, the goal is to estimate the population in all grid cells across the entire sampling area (100 X 100 grid for the simulated data). In other words, you want to create the simulated map but you have not sampled all cells, and those that you did sample are subject to uncertainty. There are numerous ways to analyze the data, which can be lumped into `design-based` and `model-based`.
+Now that you have your samples, the goal is to estimate the population in all grid cells across the entire sampling area (100 X 100 grid for the simulated data), in all years. In other words, you want to create the full simulated map but you have not sampled all cells, and those that you did sample are subject to uncertainty. There are numerous ways to analyze the data, which can be lumped into `design-based` and `model-based`.
+
+# Design-based estimate of abundance
+
+Assuming that the area of each grid cell is 1, under simple random sampling the design-based estimate is the product of the mean of observations and the total area (1 \* the number of grid cells in the domain). We then calculate the variance, standard error and 95% confidence interval.
+
+```{r index_db}
+index_db <- samples |> 
+  dplyr::group_by(year) |> 
+  dplyr::summarize(index = mean(observation) * N, 
+                   variance = N^2 * (1-(n/N)) * (var(observation)/n)) |>
+  dplyr::mutate(se = sqrt(variance),
+                lwr = index - qt(0.975, df = n - 1) * se,
+                upr = index + qt(0.975, df = n - 1) * se)
+
+# plot index with 95% CI
+ggplot2::ggplot(index_db, aes(year, index)) + 
+  ggplot2::geom_line() + 
+  ggplot2::geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.4) + 
+  ggplot2::xlab('Year') + 
+  ggplot2::ylab('Total biomass estimate')
+```
 
 # Model-based estimate of abundance
 
 ## Fit model and check convergence and parameter values
 
 ```{r fit}
-mesh <- sdmTMB::make_mesh(theSample, 
+mesh <- sdmTMB::make_mesh(samples, 
                           xy_cols = c("X", "Y"), 
                           type = "cutoff_search", 
                           n_knots = 50)
@@ -96,7 +135,7 @@ plot(mesh)
 
 fit <- sdmTMB::sdmTMB(
   formula = observation ~ 0 + as.factor(year), 
-  data = theSample,
+  data = samples,
   mesh = mesh,
   time = "year",
   family = sdmTMB::tweedie(), 
@@ -113,28 +152,25 @@ sanity(fit) # model checking
 
 ```{r inspect}
 # randomized quantile residuals
-theSample$resids <- residuals(fit) 
-hist(theSample$resids)
+samples$resids <- residuals(fit) 
+hist(samples$resids)
 
 # qq plot
-qqnorm(theSample$resids)
+qqnorm(samples$resids)
 abline(a = 0, b = 1)
 
 # spatial residuals
-ggplot(theSample, aes(X, Y, col = resids)) + scale_colour_gradient2() +
+ggplot(samples, aes(X, Y, col = resids)) + scale_colour_gradient2() +
   geom_point() + facet_wrap(~year) + coord_fixed()
 ```
 
-## Predict model
+## Predict from model to all locations and years
 
 Predict to grid of full survey domain and map predictions and each component of the predictions (fixed and random effects) to see contributions of each to the full prediction.
 
 ```{r predict}
-# replicate grid for each year to make prediction grid
-predictor_yrs <- sdmTMB::replicate_df(predictor_dat, "year", unique(dat$year))
-
 # predict
-predictions <- stats::predict(fit, newdata = predictor_yrs, 
+predictions <- stats::predict(fit, newdata = predictor_dat, 
                               return_tmb_object = TRUE)
 
 # visualize predictions, then how fixed and random effects contribute
@@ -171,27 +207,6 @@ index <- sdmTMB::get_index(predictions, area = 1, bias_correct = TRUE,
 
 # plot index with 95% CI
 ggplot2::ggplot(index, aes(year, est)) + 
-  ggplot2::geom_line() + 
-  ggplot2::geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.4) + 
-  ggplot2::xlab('Year') + 
-  ggplot2::ylab('Total biomass estimate')
-```
-
-# Design-based estimate of abundance
-
-Assuming again that the area of each grid cell is 1, under simple random sampling the design-based estimate is the product of the mean of observations and the total area (1 \* the number of grid cells in the domain). We then calculate the variance, standard error and 95% confidence interval.
-
-```{r index_db}
-index_db <- theSample |> 
-  dplyr::group_by(year) |> 
-  dplyr::summarize(index = mean(observation) * N, 
-                   variance = N^2 * (1-(n/N)) * (var(observation)/n)) |>
-  dplyr::mutate(se = sqrt(variance/n),
-                lwr = index - qt(0.975, df = n - 1) * se,
-                upr = index + qt(0.975, df = n - 1) * se)
-
-# plot index with 95% CI
-ggplot2::ggplot(index_db, aes(year, index)) + 
   ggplot2::geom_line() + 
   ggplot2::geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.4) + 
   ggplot2::xlab('Year') + 

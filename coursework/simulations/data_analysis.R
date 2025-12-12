@@ -67,10 +67,9 @@ ggplot(sim_dat_obs, aes(X, Y, col = resids)) + scale_colour_gradient2() +
 # predict model to grid of full survey domain ----------------------------------
 # replicate grid for each year to make prediction grid
 grid <- readRDS(here::here("coursework/simulations/sim_data/grid.RDS"))
-grid_yrs <- sdmTMB::replicate_df(grid, "year", unique(sim_dat$year))
 
 # predict
-predictions <- stats::predict(fit, newdata = grid_yrs, return_tmb_object = TRUE)
+predictions <- stats::predict(fit, newdata = grid, return_tmb_object = TRUE)
 
 # visualize predictions, then how fixed and random effects contribute 
 plot_map <- function(dat, column) {
@@ -102,11 +101,28 @@ plot_map(predictions$data, epsilon_st) +
 
 # compute abundance index ------------------------------------------------------
 # we will assume that the area of each grid cell is 1
-index <- sdmTMB::get_index(predictions, area = 1, bias_correct = TRUE)
+index <- sdmTMB::get_index(predictions, area = 1, bias_correct = TRUE,
+                           level = 0.95) # 95% CI
 
-# plot index
+# plot model-based index with 95% CI
 ggplot2::ggplot(index, aes(year, est)) + 
   ggplot2::geom_line() +
   ggplot2::geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.4) +
+  ggplot2::xlab('Year') + 
+  ggplot2::ylab('Total biomass estimate')
+
+# design-based index -----------------------------------------------------------
+index_db <- sim_dat_obs |> 
+  dplyr::group_by(year) |> 
+  dplyr::summarize(index = mean(observed_scaled) * N, 
+                   variance = N^2 * (1-(n/N)) * (var(observed_scaled)/n)) |>
+  dplyr::mutate(se = sqrt(variance),
+                lwr = index - qt(0.975, df = n - 1) * se,
+                upr = index + qt(0.975, df = n - 1) * se)
+
+# plot index with 95% CI
+ggplot2::ggplot(index_db, aes(year, index)) + 
+  ggplot2::geom_line() + 
+  ggplot2::geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.4) + 
   ggplot2::xlab('Year') + 
   ggplot2::ylab('Total biomass estimate')
