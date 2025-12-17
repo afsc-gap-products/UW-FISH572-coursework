@@ -12,7 +12,19 @@ library(sdmTMB)
 
 # Introduction
 
-The mid-course project for Fish 572 is to analyze survey data, which may be a data set of their choice or simulated data provided by the instructors. This document describes how to use one of the simulated datasets. The methods described here may be extended to a real survey dataset.
+The mid-course project for Fish 572 is to analyze survey data, which may be a data set of their choice or simulated data provided by the instructors. Format of the presentation will be open and can include analysis description and graphs or tables. This analysis will be graded independently of the class project, but can be included as part of the final paper. Data analysis will be due at the end of week 6 of the course.
+
+This document describes the expectations of the assignment and how to use one of the simulated datasets. The methods described here may be extended to a real survey dataset.
+
+# Assignment expectations
+The purpose of this assignment is to become familiar with analysis of survey data. It is expected that standard design-based and model-based estimates will be presented. THe paper should provide a brief description of the data used, assumptions used in the analyses, justification of the methods, and results. The assignment is due end of the day **February 16**.
+
+Furthermore, sensitivities to choices made for the analysis are encouraged and can be used for the final project. For example, some analyses may include:
+
+- a detailed comparison of design-based and model-based estimates, highlighting where and why differences occur, and which method is preferable for the data used;
+- a comparison of sampling assumptions including pre-stratification when sampling simulated data, and/or post-stratification for sampled simulated or real data;
+- an investigation of different assumptions used in model-based analyses;
+- other interesting topics.
 
 # Simulated data
 
