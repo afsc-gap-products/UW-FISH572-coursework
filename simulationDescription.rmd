@@ -7,37 +7,40 @@ output: pdf_document
 
 ```{r setup, include=FALSE}
 library(ggplot2)
-library(sdmTMB)
 ```
 
 # Introduction
 
-The mid-course project for Fish 572 is to analyze survey data, which may be a data set of their choice or simulated data provided by the instructors. Format of the presentation will be open and can include analysis description and graphs or tables. This analysis will be graded independently of the class project, but can be included as part of the final paper. Data analysis will be due at the end of week 6 of the course.
+The mid-course project for Fish 572 is to analyze survey data, which may be a data set chosen by the student or simulated data provided by the instructors. Format of the presentation will be open and can include analysis description and graphs or tables. This analysis will be graded independently of the class project, but can be included as part of the final paper. Data analysis will be due at the end of week 6 of the course. Note that you will need to install the R package sdmTMB to execute the model-based analysis portion of this example.
 
 This document describes the expectations of the assignment and how to use one of the simulated datasets. The methods described here may be extended to a real survey dataset.
 
 # Assignment expectations
-The purpose of this assignment is to become familiar with analysis of survey data. It is expected that standard design-based and model-based estimates will be presented. THe paper should provide a brief description of the data used, assumptions used in the analyses, justification of the methods, and results. The assignment is due end of the day **February 16**.
 
-Furthermore, sensitivities to choices made for the analysis are encouraged and can be used for the final project. For example, some analyses may include:
+The purpose of this assignment is to become familiar with analysis of survey data. It is expected that standard design-based and model-based estimates will be presented. The paper should provide a brief description of the data used, assumptions used in the analyses, justification of the methods, and results. The assignment is due end of the day **February 16**.
 
-- a detailed comparison of design-based and model-based estimates, highlighting where and why differences occur, and which method is preferable for the data used;
-- a comparison of sampling assumptions including pre-stratification when sampling simulated data, and/or post-stratification for sampled simulated or real data;
-- an investigation of different assumptions used in model-based analyses;
-- other interesting topics.
+Furthermore, sensitivities to choices made for the analysis are encouraged and can be used for the final project. In particular, the effect of changing observation error and catchability parameters should be evaluated. Consider how you will evaluate the performance of different designs and estimators (e.g., comparing estimates to true values, precision and accuracy of estimators). Examples of analyses may include:
+
+-   a detailed comparison of design-based and model-based estimates, highlighting where and why differences occur, and which method is preferable for the data used;
+-   comparing sampling designs;
+    -   stratification: a comparison of sampling assumptions including pre-stratification when sampling simulated data, and/or post-stratification for sampled simulated or real data;
+    -   allocation: a comparison of random and systematic sampling, or other techniques, with or without stratification;
+-   an investigation of the effect of different assumptions or model settings used in model-based analyses;
+-   determining how sample size influences results, in conjunction with observation error and variation in catchability;
+-   other interesting topics from your own creativity.
 
 # Simulated data
 
 Data were simulated across a square grid of 100 X 100 cells with depth contours. Here is a plot of the locations on the grid with deeper depths shown in darker blue.
 
 ```{r grid}
-# make sure in the correct directory
+# make sure in the correct directory and using the dataset number assigned to you
 dat <- readRDS("coursework/simulations/sim_data/sim_dat_1.RDS")
 predictor_dat <- readRDS("coursework/simulations/sim_data/grid.RDS")
 predictor_dat$negDepth <- -1 * predictor_dat$depth
 
 ggplot(dplyr::filter(predictor_dat, year == 1), aes(X, Y)) +
-  geom_tile(aes(fill = negDepth),colour=rgb(0,0,0,0.1),linewidth=0.2) +
+  geom_raster(aes(fill = negDepth)) +
   scale_color_gradient2() + 
   scale_x_continuous(expand = c(0, 0)) + # Remove expansion on x-axis
   scale_y_continuous(expand = c(0, 0)) # Remove expansion on x-axis
@@ -48,7 +51,7 @@ There are eight (8) columns in a simulated dataset: - year: the year, being 1:6;
 ```{r simulated}
 #plot eta
 ggplot(dplyr::filter(dat, year == 1), aes(X, Y)) +
-  geom_tile(aes(fill = eta_scaled),colour=rgb(1,1,1,0.05),linewidth=0.2) +
+  geom_raster(aes(fill = eta_scaled)) +
   scale_color_gradient2() + 
   scale_x_continuous(expand = c(0, 0)) + # Remove expansion on x-axis
   scale_y_continuous(expand = c(0, 0)) # Remove expansion on x-axis
@@ -57,7 +60,7 @@ ggplot(dplyr::filter(dat, year == 1), aes(X, Y)) +
 ```{r observed}
 #plot observed
 ggplot(dplyr::filter(dat, year == 1), aes(X, Y)) +
-  geom_tile(aes(fill = observed_scaled),colour=rgb(1,1,1,0.05),linewidth=0.2) +
+  geom_raster(aes(fill = observed_scaled)) +
   scale_color_gradient2() + 
   scale_x_continuous(expand = c(0, 0)) + # Remove expansion on x-axis
   scale_y_continuous(expand = c(0, 0)) # Remove expansion on x-axis
@@ -83,7 +86,7 @@ sample <- sampleGrid.fn(sampleDat, obsCV, catchabilityPars,varName="eta")
 
 #plot sample
 ggplot(sample, aes(X, Y)) +
-  geom_tile(aes(fill = observation)) +
+  geom_raster(aes(fill = observation)) +
   scale_color_gradient2() + 
   scale_x_continuous(expand = c(0, 0)) + # Remove expansion on x-axis
   scale_y_continuous(expand = c(0, 0)) # Remove expansion on x-axis
@@ -139,6 +142,8 @@ ggplot2::ggplot(index_db, aes(year, index)) +
 ## Fit model and check convergence and parameter values
 
 ```{r fit}
+library(sdmTMB) # install.packages("sdmTMB", dependencies = TRUE)
+
 mesh <- sdmTMB::make_mesh(samples, 
                           xy_cols = c("X", "Y"), 
                           type = "cutoff_search", 
