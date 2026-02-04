@@ -403,7 +403,7 @@ ggplot(pred_gam_df, aes(X, Y, fill = pred_gam)) + geom_raster() +
 # Calculate biomass index from GAM via simulation
 
 ```{r}
-sims <- gratia::fitted_samples(fit_gam, n=10, newdata=grid, 
+sims <- gratia::fitted_samples(fit_gam, n=10, data=grid, 
                                scale="response", seed=9)
 sims$year <- grid$year[sims$.row]
 sims$biomass <- sims$.fitted * 4 # expand from density to biomass, given area
