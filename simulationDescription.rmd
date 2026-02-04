@@ -7,6 +7,8 @@ output: pdf_document
 
 ```{r setup, include=FALSE}
 library(ggplot2)
+options(ggplot2.continuous.colour = "viridis")
+options(ggplot2.continuous.fill = "viridis")
 ```
 
 # Introduction
@@ -35,9 +37,12 @@ Data were simulated across a square grid of 100 X 100 cells with depth contours.
 
 ```{r grid}
 # make sure in the correct directory and using the dataset number assigned to you
-dat <- readRDS("coursework/simulations/sim_data/sim_dat_1.RDS")
+dat <- readRDS("coursework/simulations/sim_data/sim_dat_10.RDS")
 predictor_dat <- readRDS("coursework/simulations/sim_data/grid.RDS")
 predictor_dat$negDepth <- -1 * predictor_dat$depth
+
+head(dat)
+head(predictor_dat)
 
 ggplot(dplyr::filter(predictor_dat, year == 1), aes(X, Y)) +
   geom_raster(aes(fill = negDepth)) +
@@ -147,7 +152,7 @@ library(sdmTMB) # install.packages("sdmTMB", dependencies = TRUE)
 mesh <- sdmTMB::make_mesh(samples, 
                           xy_cols = c("X", "Y"), 
                           type = "cutoff_search", 
-                          n_knots = 50)
+                          n_knots = 50) # try a bit higher too
 plot(mesh)
 
 fit <- sdmTMB::sdmTMB(
@@ -157,7 +162,8 @@ fit <- sdmTMB::sdmTMB(
   time = "year",
   family = sdmTMB::lognormal(), 
   spatial = "on", # c("on", "off")
-  spatiotemporal = "iid", # c("iid", "ar1", "rw", "off")
+  spatiotemporal = "iid" # c("iid", "ar1", "rw", "off")
+  # turn spatiotemporal = "off" if get errors about sigma_E 
 )
 
 fit
@@ -204,14 +210,14 @@ plot_map(predictions$data, exp(est_non_rf)) +
   ggtitle("Prediction (fixed effects only)") + 
   scale_fill_viridis_c(trans = "sqrt")
 
-# spatial random effects
+# spatial random effects (if estimated, if not, comment out)
 plot_map(predictions$data, omega_s) + 
   ggtitle("Spatial random effects only") + 
   scale_fill_gradient2()
 
-# spatiotemporal random effects
-plot_map(predictions$data, epsilon_st) + 
-  ggtitle("Spatiotemporal random effects only") + 
+# spatiotemporal random effects (if estimated, if not, comment out)
+plot_map(predictions$data, epsilon_st) +
+  ggtitle("Spatiotemporal random effects only") +
   scale_fill_gradient2()
 ```
 
@@ -219,8 +225,7 @@ plot_map(predictions$data, epsilon_st) +
 
 ```{r index}
 # we will assume that the area of each grid cell is 1
-index <- sdmTMB::get_index(predictions, area = 1, bias_correct = TRUE,
-                           level = 0.95) # desired confidence interval here is 95%
+index <- sdmTMB::get_index(predictions, area = 1, bias_correct = TRUE, level = 0.95) # desired confidence interval here is 95% 
 
 # plot index with 95% CI
 ggplot2::ggplot(index, aes(year, est)) + 
